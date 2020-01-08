@@ -1,9 +1,9 @@
 import logging
 
-import datetime
 import os
 import subprocess
 import binascii
+import re
 
 from downloader import download, url_patterns
 
@@ -11,7 +11,27 @@ logger = logging.getLogger('mega')
 
 
 def _get_rng_str(length=16):
-	return binascii.b2a_hex(os.urandom(length)).decode("utf-8")
+    return binascii.b2a_hex(os.urandom(length)).decode("utf-8")
+
+
+def _clean_ansi_characters(string, regex=r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'):
+    ansi_escape = re.compile(regex)
+    return ansi_escape.sub('', string)
+
+
+def _get_megadl_files(path, link):
+    raw_output = subprocess.run(
+        args=download.get_os_cmd(['megadl', "--print-names", "--path", path.replace("\\", "/"), link]),
+        check=True,
+        stdout=subprocess.PIPE).stdout
+    contents = []
+    for line in raw_output.splitlines():
+        contents.append(_clean_ansi_characters(line.decode("utf8")))
+    for i, content in enumerate(contents):
+        if content.startswith("Downloaded "):
+            logger.debug("Got MEGA files: " + str(contents[i+1:]))
+            return contents[i+1:]
+    return False
 
 
 def get_link(link):
@@ -19,18 +39,14 @@ def get_link(link):
     if link.startswith("!#"):
         link = "https://mega.nz/" + link
     try:
-        # print(['wsl', 'megadl', link])
         megadl_dir = "."
         while os.path.isdir(megadl_dir):
             megadl_dir = os.path.join(".", "megadl", _get_rng_str())
         os.makedirs(megadl_dir)
-        raw_output = subprocess.run(download.get_os_cmd(['megadl', "--path", megadl_dir, link]), check=True).stdout.decode("utf8")
-        output_file = ''.join(e for e in raw_output.split("Downloaded ")[1] if 32 <= ord(e) <= 122)# e.isalnum() or ord(e) == 46 or )
-        logger.debug('Received MEGA file ' + output_file)
-        fname, ext = os.path.splitext(output_file)
-        new_output_file = fname + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d__%H_%M_%S_%f")) + ext
-        os.rename(output_file, os.path.join(".", megadl_dir, new_output_file))
-        download.unpack(new_output_file, remove_file=True)
+        for output_file in _get_megadl_files(megadl_dir, link):
+            new_output_file = download.rotate_name(output_file)
+            os.rename(os.path.join(".", megadl_dir, output_file), new_output_file)
+            download.unpack(new_output_file, remove_file=True)
     except Exception as e:
         logger.error(e)
         download.log_failed_download(link)
