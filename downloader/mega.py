@@ -3,10 +3,15 @@ import logging
 import datetime
 import os
 import subprocess
+import binascii
 
 from downloader import download, url_patterns
 
 logger = logging.getLogger('mega')
+
+
+def _get_rng_str(length=16):
+	return binascii.b2a_hex(os.urandom(length)).decode("utf-8")
 
 
 def get_link(link):
@@ -15,12 +20,16 @@ def get_link(link):
         link = "https://mega.nz/" + link
     try:
         # print(['wsl', 'megadl', link])
-        raw_output = subprocess.run(download.get_os_cmd(['megadl', link]), check=True).stdout.decode("utf8")
+        megadl_dir = "."
+        while os.path.isdir(megadl_dir):
+            megadl_dir = os.path.join(".", "megadl", _get_rng_str())
+        os.makedirs(megadl_dir)
+        raw_output = subprocess.run(download.get_os_cmd(['megadl', "--path", megadl_dir, link]), check=True).stdout.decode("utf8")
         output_file = ''.join(e for e in raw_output.split("Downloaded ")[1] if 32 <= ord(e) <= 122)# e.isalnum() or ord(e) == 46 or )
         logger.debug('Received MEGA file ' + output_file)
         fname, ext = os.path.splitext(output_file)
         new_output_file = fname + '_' + str(datetime.datetime.now().strftime("%Y-%m-%d__%H_%M_%S_%f")) + ext
-        os.rename(output_file, new_output_file)
+        os.rename(output_file, os.path.join(".", megadl_dir, new_output_file))
         download.unpack(new_output_file, remove_file=True)
     except Exception as e:
         logger.error(e)
