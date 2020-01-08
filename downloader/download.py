@@ -71,6 +71,8 @@ def unpack(filename, remove_file=False):
             logger.error(e)
     elif ext in [".rar", ".7z"]:  # requires to have 7zip installed
         try:
+            if not os.path.isdir(extract_dir):
+                os.makedirs(extract_dir)
             patoolib.extract_archive(filename, outdir=extract_dir)
             extracted = True
         except Exception as e:
