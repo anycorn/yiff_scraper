@@ -35,7 +35,7 @@ def _get_megadl_files(path, link):
 
 
 def get_link(link):
-    link = link.replace('http://https://', 'https://', 1)
+    link = link.replace('http://https//', 'https://', 1)
     if link.startswith("!#"):
         link = "https://mega.nz/" + link
     try:

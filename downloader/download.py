@@ -107,6 +107,7 @@ def get_filename(response, fname=None):
 def download(url, fname=None):
     try:
         url = str(url).replace('http://https://', 'https://', 1)  # http://https:// sometimes seems to happen?
+        url = str(url).replace('http://https//', 'https://', 1)  # http://https// sometimes seems to happen?
         response = requests.get(url, allow_redirects=True)
     except Exception as e:
         logger.error(e)

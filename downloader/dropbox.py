@@ -5,8 +5,12 @@ from downloader import download, url_patterns
 logger = logging.getLogger('dropbox')
 
 
-def get_link(link):
+def _get_link(link):
     return link.split('?')[0] + '?dl=1'
+
+
+def get_link(link):
+    download.download(_get_link(link))
 
 
 # Get all links to Dropbox on this page and try to download them.
@@ -21,4 +25,4 @@ def get_soup(soup):
     links = list(dict.fromkeys(links))
     logger.debug('Found dropbox links: ' + str(links))
     for link in links:
-        download.download(get_link(link))
+        get_link(link)
