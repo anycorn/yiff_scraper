@@ -58,7 +58,7 @@ def get_links(soup, check_str):
 
 
 # Uses a link list to return a complete list of files
-def get_paths(unfinished_lst, origin):
+def get_paths(unfinished_lst, origin=""):
     finished = []
     for x in unfinished_lst:
         finished.append(origin+x)
@@ -70,7 +70,7 @@ def get_paths(unfinished_lst, origin):
 def save_file(URL):
     name = get_file_name(URL)
     n = 1
-    while name in os.listdir():
+    while name in os.listdir("."):
         lst = name.split('.')
         ext = lst[-1]
         lst = lst[:-1]
@@ -80,7 +80,7 @@ def save_file(URL):
             name = temp_name
         n += 1
     print("\nDownloading {}".format(name))
-    response = requests.get(URL, stream=True)
+    response = requests.get(URL, stream=True, allow_redirects=True)
     with open(name, "wb") as f:
         for chunk in response.iter_content(32768):
             if chunk:  # filter out keep-alive new chunks
@@ -106,7 +106,8 @@ def download_and_save_page(soup, check_str, origin_path):
 
 def download_and_save_all(URL):
     origin_path = get_origin(URL)  # broken
-    origin_path = 'https://yiff.party/'
+    origin_path = 'https://yiff.party/'  # broken
+    origin_path = ""
     check_str = ["patreon_data", "patreon_inline"]
 
     response = requests.get(URL)
@@ -115,7 +116,7 @@ def download_and_save_all(URL):
     print("*" + name_element)
 
     # Create folder to save files
-    if name_element not in os.listdir():
+    if name_element not in os.listdir("."):
         os.mkdir(name_element)
     else:
         print("WARNING: Folder for same already exists. Please delete and try again.")
