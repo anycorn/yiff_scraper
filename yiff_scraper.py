@@ -65,10 +65,10 @@ def get_paths(unfinished_lst, origin=""):
     return finished
 
 
-# Saves a file from the given URL
+# Saves a file from the given url
 # TODO fix no download issue on random files
-def save_file(URL):
-    name = get_file_name(URL)
+def save_file(url):
+    name = get_file_name(url)
     n = 1
     while name in os.listdir("."):
         lst = name.split('.')
@@ -76,11 +76,11 @@ def save_file(URL):
         lst = lst[:-1]
         lst.append("({})".format(n))
         temp_name = "".join(lst) + "." + ext
-        if temp_name not in os.listdir():
+        if temp_name not in os.listdir("."):
             name = temp_name
         n += 1
     print("\nDownloading {}".format(name))
-    response = requests.get(URL, stream=True, allow_redirects=True)
+    response = requests.get(url, stream=True, allow_redirects=True)
     with open(name, "wb") as f:
         for chunk in response.iter_content(32768):
             if chunk:  # filter out keep-alive new chunks
@@ -125,7 +125,7 @@ def download_and_save_all(URL):
 
     download_and_save_page(soup, check_str, origin_path)  # save this page
 
-    if not "p=" in URL:  # particular page number selected, only download single page
+    if "p=" not in URL:  # particular page number selected, only download single page
         for page in range(2, _get_pages(soup)[1]+1, 1):  # go with each page
             page_url = URL.rsplit("?", 1)[0] + "?p=" + str(page)
             page_soup = BeautifulSoup(requests.get(page_url).content, "html.parser")
