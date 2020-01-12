@@ -1,9 +1,10 @@
 import logging
 import requests
 
-from downloader import download, url_patterns
+from downloader import download
 
 logger = logging.getLogger('gdrive')
+url_patterns = ['drive.google']
 
 
 def get_link(link):
@@ -58,7 +59,7 @@ def get_soup(soup):
     ids = []
     for link in soup.findAll('a'):
         this_link = link.get('href')
-        if any(pattern in str(this_link).lower() for pattern in url_patterns.googledrive):
+        if any(pattern in str(this_link).lower() for pattern in url_patterns):
             ids.append(this_link)
     ids = list(dict.fromkeys(ids))  # remove duplicates
     logger.debug('Found gdrive ids: ' + str(ids))

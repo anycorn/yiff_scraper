@@ -2,9 +2,10 @@
 
 import logging
 import requests
-from downloader import download, url_patterns
+from downloader import download
 
 logger = logging.getLogger('Yandisk')
+url_patterns = ['yadi.sk']
 
 API_ENDPOINT = 'https://cloud-api.yandex.net/v1/disk/public/resources/download?public_key={}'
 
@@ -47,7 +48,7 @@ def get_soup(soup):
     links = []
     for link in soup.findAll('a'):
         this_link = link.get('href')
-        if any(pattern in str(this_link).lower() for pattern in url_patterns.yandisk):
+        if any(pattern in str(this_link).lower() for pattern in url_patterns):
             links.append(this_link)
     links = list(dict.fromkeys(links))
     logger.debug('Found yandex links: ' + str(links))

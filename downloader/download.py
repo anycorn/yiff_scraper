@@ -8,8 +8,7 @@ import requests
 import urllib
 import re
 
-from downloader import url_patterns
-from downloader import dropbox, googledrive, mega, onedrive, yandisk
+from downloader import discord, dropbox, googledrive, mega, onedrive, yandisk
 from zipfile import ZipFile
 import patoolib
 
@@ -25,15 +24,11 @@ def get_os_cmd(cmd):
 
 
 def get_soups(soup):
-    logger.info('Downloading mega.nz links..')
     mega.get_soup(soup)
-    logger.info('Downloading Dropbox links..')
+    discord.get_soup(soup)
     dropbox.get_soup(soup)
-    logger.info('Downloading Google Drive links..')
     googledrive.get_soup(soup)
-    logger.info('Downloading OneDrive links..')
     onedrive.get_soup(soup)
-    logger.info('Downloading Yandex links..')
     yandisk.get_soup(soup)
 
 
@@ -122,15 +117,15 @@ def download(url, fname=None):
 
 
 def log_failed_download(link):
-    if any(pattern in link for pattern in url_patterns.dropbox):
+    if any(pattern in link for pattern in dropbox.url_patterns):
         filename = "dropbox.txt"
-    elif any(pattern in link for pattern in url_patterns.googledrive):
+    elif any(pattern in link for pattern in googledrive.url_patterns):
         filename = "gdrive.txt"
-    elif any(pattern in link for pattern in url_patterns.mega):
+    elif any(pattern in link for pattern in mega.url_patterns):
         filename = "mega.nz.txt"
-    elif any(pattern in link for pattern in url_patterns.onedrive):
+    elif any(pattern in link for pattern in onedrive.url_patterns):
         filename = "onedrive.txt"
-    elif any(pattern in link for pattern in url_patterns.yandisk):
+    elif any(pattern in link for pattern in yandisk.url_patterns):
         filename = "yadi.sk.txt"
     else:
         filename = "download.txt"

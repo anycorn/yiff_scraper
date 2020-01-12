@@ -1,8 +1,9 @@
 import logging
 
-from downloader import download, url_patterns
+from downloader import download
 
 logger = logging.getLogger('dropbox')
+url_patterns = ['dropbox']
 
 
 def _get_link(link):
@@ -19,7 +20,7 @@ def get_soup(soup):
     links = []
     for link in soup.findAll('a'):
         this_link = link.get('href')
-        if any(pattern in str(this_link).lower() for pattern in url_patterns.dropbox):
+        if any(pattern in str(this_link).lower() for pattern in url_patterns):
             #logger.debug('Found dropbox link: ' + str(this_link))
             links.append(this_link)
     links = list(dict.fromkeys(links))

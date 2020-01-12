@@ -5,9 +5,10 @@ import subprocess
 import binascii
 import re
 
-from downloader import download, url_patterns
+from downloader import download
 
 logger = logging.getLogger('mega')
+url_patterns = ['mega.nz', "#!"]
 
 
 def _get_rng_str(length=16):
@@ -64,11 +65,11 @@ def get_soup(soup):
     logger.debug('Getting MEGA links..')
     links = []
     for element in soup.strings:
-        if any(pattern in str(element).lower() for pattern in url_patterns.mega):
+        if any(pattern in str(element).lower() for pattern in url_patterns):
             links.append(_clean_link(element))
     for link in soup.findAll('a'):
         this_link = link.get('href')
-        if any(pattern in str(this_link).lower() for pattern in url_patterns.mega):
+        if any(pattern in str(this_link).lower() for pattern in url_patterns):
             links.append(_clean_link(this_link))
     links = list(dict.fromkeys(links))  # remove duplicates
     logger.debug('Found MEGA links: ' + str(links))

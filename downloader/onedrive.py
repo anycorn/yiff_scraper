@@ -5,9 +5,10 @@ import os
 
 import logging
 
-from downloader import download, url_patterns
+from downloader import download
 
 logger = logging.getLogger('OneDrive')
+url_patterns = ['live', 'onedrive', '1drv.ms']
 
 
 def _get_id(link_id):
@@ -73,7 +74,7 @@ def get_soup(soup):
     links = []
     for link in soup.findAll('a'):
         this_link = link.get('href')
-        if any(pattern in str(this_link).lower() for pattern in url_patterns.onedrive):
+        if any(pattern in str(this_link).lower() for pattern in url_patterns):
             links.append(str(this_link))
     links = list(dict.fromkeys(links))
     logger.debug('Found onedrive links: ' + str(links))
