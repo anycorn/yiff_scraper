@@ -112,8 +112,10 @@ def download_and_save_all(URL):
 
     response = requests.get(URL)
     soup = BeautifulSoup(response.content, "html.parser")
-    name_element = soup.find_all('span', {"class": "yp-info-name"})[0].string
-    print("*" + name_element)
+    curr_creator_name = soup.find('span', {"class": "yp-info-name"}).contents[0].strip(" ")
+    yp_creator_name = soup.find('span', {"class": "yp-info-name"}).find("small").contents[0].strip("()")
+    print("*" + curr_creator_name + " (" + yp_creator_name + ")")
+    name_element = yp_creator_name
 
     # Create folder to save files
     if name_element not in os.listdir("."):
