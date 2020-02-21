@@ -8,7 +8,7 @@ import requests
 import urllib
 import re
 
-from downloader import discord, dropbox, googledrive, mega, onedrive, yandisk
+from downloader import catbox, discord, dropbox, gfycat, googledrive, mega, onedrive, smugsmug, uploaddir, yandisk
 from zipfile import ZipFile
 import patoolib
 
@@ -25,6 +25,7 @@ def get_os_cmd(cmd):
 
 def get_soups(soup):
     mega.get_soup(soup)
+    catbox.get_soup(soup)
     discord.get_soup(soup)
     dropbox.get_soup(soup)
     googledrive.get_soup(soup)
@@ -88,6 +89,11 @@ def get_filename(response, fname=None):
     if not fname:
         try:
             fname = re.findall("filename=(.+)", response.headers['content-disposition'])[0].replace('"', '')
+        except:
+            fname = None
+    if not fname:
+        try:
+            fname = response.url.rsplit("/", 1)[1]
         except:
             fname = None
     if not fname:
