@@ -28,8 +28,11 @@ def get_soups(soup):
     catbox.get_soup(soup)
     discord.get_soup(soup)
     dropbox.get_soup(soup)
+    gfycat.get_soup(soup)
     googledrive.get_soup(soup)
     onedrive.get_soup(soup)
+    smugsmug.get_soup(soup)
+    uploaddir.get_soup(soup)
     yandisk.get_soup(soup)
 
 
